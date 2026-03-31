@@ -1,1 +1,48 @@
-IiIiDQpPcmRlciBzaGlwcGluZyBjb3N0IGNhbGN1bGF0b3IuDQoNClNoaXBwaW5nIHRpZXJzIChieSBwYWNrYWdlIHdlaWdodCk6DQogIC0gVW5kZXIgNSBrZyAgOiBGcmVlICAoJDAuMDApDQogIC0gNSDDouKCrOKAnCAyMCBrZyAgIDogU3RhbmRhcmQgKCQ1LjAwKQ0KICAtIE92ZXIgMjAga2cgIDogSGVhdnkgICAoJDE1LjAwKQ0KIiIiDQoNCg0KZGVmIGNhbGN1bGF0ZV9zaGlwcGluZ19jb3N0KHdlaWdodF9rZzogZmxvYXQpIC0+IGZsb2F0Og0KICAgICIiIlJldHVybiB0aGUgc2hpcHBpbmcgY29zdCBpbiBVU0QgZm9yIGEgcGFja2FnZSBvZiB0aGUgZ2l2ZW4gd2VpZ2h0IChrZykuDQoNCiAgICBBcmdzOg0KICAgICAgICB3ZWlnaHRfa2c6IFBhY2thZ2Ugd2VpZ2h0IGluIGtpbG9ncmFtcy4gTXVzdCBiZSA+PSAwLg0KDQogICAgUmV0dXJuczoNCiAgICAgICAgU2hpcHBpbmcgY29zdCBhcyBhIGZsb2F0Lg0KDQogICAgUmFpc2VzOg0KICAgICAgICBWYWx1ZUVycm9yOiBJZiB3ZWlnaHRfa2cgaXMgbmVnYXRpdmUuDQogICAgIiIiDQogICAgaWYgd2VpZ2h0X2tnIDwgMDoNCiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcihmIldlaWdodCBtdXN0IGJlIG5vbi1uZWdhdGl2ZSwgZ290IHt3ZWlnaHRfa2d9IikNCg0KICAgIGlmIHdlaWdodF9rZyA8IDU6DQogICAgICAgIHJldHVybiAwLjAwDQogICAgZWxpZiB3ZWlnaHRfa2cgPD0gMjA6DQogICAgICAgIHJldHVybiA1LjAwDQogICAgZWxzZToNCiAgICAgICAgcmV0dXJuIDE1LjAwDQoNCg0KZGVmIGNhbGN1bGF0ZV9vcmRlcl90b3RhbCh1bml0X3ByaWNlOiBmbG9hdCwgcXVhbnRpdHk6IGludCwgd2VpZ2h0X2tnOiBmbG9hdCkgLT4gZGljdDoNCiAgICAiIiJDYWxjdWxhdGUgdGhlIGZ1bGwgb3JkZXIgYnJlYWtkb3duIGluY2x1ZGluZyBzdWJ0b3RhbCwgc2hpcHBpbmcsIGFuZCB0b3RhbC4NCg0KICAgIEFyZ3M6DQogICAgICAgIHVuaXRfcHJpY2U6IFByaWNlIHBlciB1bml0IGluIFVTRC4NCiAgICAgICAgcXVhbnRpdHk6ICAgTnVtYmVyIG9mIHVuaXRzIG9yZGVyZWQuDQogICAgICAgIHdlaWdodF9rZzogIFRvdGFsIHNoaXBtZW50IHdlaWdodCBpbiBrZy4NCg0KICAgIFJldHVybnM6DQogICAgICAgIEEgZGljdCB3aXRoIGtleXM6IHN1YnRvdGFsLCBzaGlwcGluZywgdG90YWwuDQogICAgIiIiDQogICAgc3VidG90YWwgPSB1bml0X3ByaWNlICogcXVhbnRpdHkNCiAgICBzaGlwcGluZyA9IGNhbGN1bGF0ZV9zaGlwcGluZ19jb3N0KHdlaWdodF9rZykNCiAgICB0b3RhbCA9IHN1YnRvdGFsICsgc2hpcHBpbmcNCiAgICByZXR1cm4geyJzdWJ0b3RhbCI6IHN1YnRvdGFsLCAic2hpcHBpbmciOiBzaGlwcGluZywgInRvdGFsIjogdG90YWx9DQo=
+"""
+Order shipping cost calculator.
+
+Shipping tiers (by package weight):
+  - Under 5 kg  : Free  ($0.00)
+  - 5 – 20 kg   : Standard ($5.00)
+  - Over 20 kg  : Heavy   ($15.00)
+"""
+
+
+def calculate_shipping_cost(weight_kg: float) -> float:
+    """Return the shipping cost in USD for a package of the given weight (kg).
+
+    Args:
+        weight_kg: Package weight in kilograms. Must be >= 0.
+
+    Returns:
+        Shipping cost as a float.
+
+    Raises:
+        ValueError: If weight_kg is negative.
+    """
+    if weight_kg < 0:
+        raise ValueError(f"Weight must be non-negative, got {weight_kg}")
+
+    if weight_kg < 5:
+        return 0.00
+    elif weight_kg <= 20:
+        return 5.00
+    else:
+        return 15.00
+
+
+def calculate_order_total(unit_price: float, quantity: int, weight_kg: float) -> dict:
+    """Calculate the full order breakdown including subtotal, shipping, and total.
+
+    Args:
+        unit_price: Price per unit in USD.
+        quantity:   Number of units ordered.
+        weight_kg:  Total shipment weight in kg.
+
+    Returns:
+        A dict with keys: subtotal, shipping, total.
+    """
+    subtotal = unit_price * quantity
+    shipping = calculate_shipping_cost(weight_kg)
+    total = subtotal + shipping
+    return {"subtotal": subtotal, "shipping": shipping, "total": total}
