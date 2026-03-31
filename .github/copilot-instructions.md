@@ -62,15 +62,19 @@ python -m pytest tests/ -v --tb=short 2>&1 | tee baseline_results.txt
 
 ---
 
-## Step 2 — Write a failing reproduction test (Red)
+## Step 2 — Write a failing reproduction test (Red) — **only if needed**
 
 **Tools:** file-write capabilities (no MCP required for this step)
 
-Using the Jira description from Step 1, write a **new, targeted test** that
-directly reproduces the reported bug. This test must fail on the unpatched
-code. It serves as a living contract: when it goes green, the bug is fixed.
+First, check whether the BASELINE already contains failing tests that directly
+exercise the buggy behaviour described in the ticket:
 
-### 2a — Create the reproduction test file
+- **If BASELINE has failing tests that cover the reported case** → skip to
+  Step 3. Those tests *are* the regression guard; no new file is required.
+- **If no existing test covers the reported case** → proceed with Steps 2a–2b
+  below to write a targeted reproduction test.
+
+### 2a — Create the reproduction test file *(skip if existing tests cover it)*
 
 Add `tests/test_repro_{{TICKET_ID}}.py`. Derive test cases entirely from the
 ticket's *Failing inputs / expected outputs* table extracted in Step 1.
@@ -86,9 +90,7 @@ ticket's *Failing inputs / expected outputs* table extracted in Step 1.
 ```python
 """
 Reproduction test for {{TICKET_ID}}.
-
-Intentionally ephemeral — deleted in Step 3e once the existing suite
-already covers the same cases.
+Written only because no existing test covered this case.
 """
 
 import pytest
@@ -107,15 +109,15 @@ class TestRepro{{TICKET_ID}}:
     # Add one method per failing case listed in the ticket.
 ```
 
-### 2b — Confirm the reproduction test fails (Red phase)
+### 2b — Confirm the reproduction test fails (Red phase) *(skip if using existing tests)*
 
 ```bash
 python -m pytest tests/test_repro_{{TICKET_ID}}.py -v
 ```
 
-Expected output: **all tests in this file FAIL** with `assert 5.0 == 15.0`
-(or equivalent). If any unexpectedly pass, re-read the Jira description and
-adjust the test inputs until they correctly expose the defect.
+Expected output: **all tests in this file FAIL**. If any unexpectedly pass,
+re-read the Jira description and adjust the test inputs until they correctly
+expose the defect.
 
 ---
 
@@ -201,7 +203,7 @@ github_create_or_update_file(
   repo    = "<OWNER>/<REPO>",
   path    = "<file path identified in ticket>",
   message = "fix({{TICKET_ID}}): <one-line summary from ticket summary field>\n\n<Root-cause description from ticket, condensed to 2-3 sentences.>",
-  content = <base64-encoded patched file content>,
+  content = <raw patched file content;>,
   branch  = "fix/{{TICKET_ID}}"
 )
 ```
@@ -268,10 +270,10 @@ The loop is considered **successfully closed** when:
 
 - [ ] `BASELINE` recorded: failing test IDs captured from the Step 0 run.
 - [ ] Jira ticket fetched and fields extracted (Step 1).
-- [ ] Reproduction test written, confirmed **red** on unpatched code (Step 2).
-- [ ] Source fix applied; reproduction test and all `BASELINE` failures turn **green** (Step 3).
+- [ ] Reproduction test written if (and only if) no existing test covered the bug, confirmed **red** on unpatched code (Step 2).
+- [ ] Source fix applied; failing tests (existing or new repro test) turn **green** (Step 3).
 - [ ] Diff reviewed — only the target file changed, no unrelated edits (Step 3d).
-- [ ] Reproduction test promoted as a regression guard; `POST_FIX` full suite run shows **zero failures** (Step 3e).
+- [ ] `POST_FIX` full suite run shows **zero failures** (Step 3e).
 - [ ] A branch `fix/{{TICKET_ID}}` exists on `origin` (Step 4).
 - [ ] A PR is open targeting `main` with the correct title and body (Step 4).
 - [ ] The Jira ticket has a comment containing the PR URL (Step 5).

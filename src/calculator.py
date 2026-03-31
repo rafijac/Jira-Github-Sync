@@ -45,4 +45,4 @@ def calculate_order_total(unit_price: float, quantity: int, weight_kg: float) ->
     subtotal = unit_price * quantity
     shipping = calculate_shipping_cost(weight_kg)
     total = subtotal + shipping
-    return {"subtotal": subtotal, "shipping": shipping, "total": total
+    return {"subtotal": subtotal, "shipping": shipping, "total": total}
