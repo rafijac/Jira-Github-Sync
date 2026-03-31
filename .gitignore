@@ -1,4 +1,5 @@
 mcp_config.json
+.vscode/mcp.json
 __pycache__/
 *.py[cod]
 *.pyo

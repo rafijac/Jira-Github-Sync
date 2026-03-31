@@ -10,7 +10,7 @@
 
 ## Pre-conditions
 
-- You have been given a Jira ticket ID (e.g. `JIRA-101`). Treat it as the
+- You have been given a Jira ticket ID  Treat it as the
   variable `{{TICKET_ID}}` throughout these instructions.
 - Both MCP servers (`jira`, `github`) are reachable and authenticated.
 - You have read/write access to this repository.
@@ -163,25 +163,20 @@ Mentally diff the changed file(s) against HEAD:
   to unrelated lines, no import additions, no docstring edits.
 - If the diff is wider than expected, trim it back.
 
-### 3e — Remove the reproduction test (Cleanup)
+### 3e — Promote the reproduction test (Keep as regression guard)
 
-The cases in `tests/test_repro_{{TICKET_ID}}.py` are now covered by the
-existing suite (confirmed by the Step 3c run). Delete the file to keep the
-test tree clean:
+`tests/test_repro_{{TICKET_ID}}.py` now passes and acts as a permanent
+regression guard — it will catch any future reintroduction of this bug.
+Do **not** delete it.
 
-```bash
-# Equivalent file-delete operation via your file tools
-delete tests/test_repro_{{TICKET_ID}}.py
-```
-
-Confirm deletion, then run the suite one final time:
+Run the full suite one final time to confirm:
 
 ```bash
 python -m pytest tests/ -v --tb=short
 ```
 
-This is the **green-and-clean** baseline. Record it as **`POST_FIX`**.
-Zero failures required before proceeding.
+Expected: every test passes, including the new reproduction test.
+Record this as **`POST_FIX`**. Zero failures required before proceeding.
 
 ---
 
@@ -195,7 +190,7 @@ Perform these sub-steps **in order**:
 ```
 github_create_branch(
   repo   = "<OWNER>/<REPO>",          # infer from the repo's git remote
-  branch = "fix/{{TICKET_ID}}",       # e.g. fix/JIRA-101
+  branch = "fix/{{TICKET_ID}}",       
   from   = "main"
 )
 ```
@@ -276,7 +271,7 @@ The loop is considered **successfully closed** when:
 - [ ] Reproduction test written, confirmed **red** on unpatched code (Step 2).
 - [ ] Source fix applied; reproduction test and all `BASELINE` failures turn **green** (Step 3).
 - [ ] Diff reviewed — only the target file changed, no unrelated edits (Step 3d).
-- [ ] Reproduction test deleted; `POST_FIX` full suite run shows **zero failures** (Step 3e).
+- [ ] Reproduction test promoted as a regression guard; `POST_FIX` full suite run shows **zero failures** (Step 3e).
 - [ ] A branch `fix/{{TICKET_ID}}` exists on `origin` (Step 4).
 - [ ] A PR is open targeting `main` with the correct title and body (Step 4).
 - [ ] The Jira ticket has a comment containing the PR URL (Step 5).

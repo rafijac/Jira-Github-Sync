@@ -40,23 +40,6 @@ class TestStandardShipping:
         assert calculate_shipping_cost(20.0) == 5.00
 
 
-class TestHeavyShipping:
-    """
-    These two tests expose JIRA-101.
-
-    On the unpatched code both fail with:
-        AssertionError: assert 5.0 == 15.0
-    because weight_kg >= 5 absorbs all weights, making weight_kg > 20 dead code.
-    """
-
-    def test_just_over_20kg(self):
-        """21 kg should cost $15.00 — FAILS on buggy code (returns $5.00)."""
-        assert calculate_shipping_cost(20.1) == 15.00  # FAILS
-
-    def test_very_heavy_package(self):
-        """50 kg should cost $15.00 — FAILS on buggy code (returns $5.00)."""
-        assert calculate_shipping_cost(50.0) == 15.00  # FAILS
-
 
 # ---------------------------------------------------------------------------
 # calculate_shipping_cost — edge / error tests

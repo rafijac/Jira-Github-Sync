@@ -23,20 +23,12 @@ def calculate_shipping_cost(weight_kg: float) -> float:
     if weight_kg < 0:
         raise ValueError(f"Weight must be non-negative, got {weight_kg}")
 
-    # -----------------------------------------------------------------------
-    # BUG (JIRA-101): The elif chain is ordered incorrectly.
-    # The second branch (`weight_kg >= 5`) is a superset of the third branch
-    # (`weight_kg > 20`), so the heavy-shipping tier is UNREACHABLE dead code.
-    # Any package over 20 kg is incorrectly charged the $5.00 standard rate.
-    # -----------------------------------------------------------------------
     if weight_kg < 5:
         return 0.00
-    elif weight_kg >= 5:   # <-- catches ALL weights ≥ 5, including > 20
+    elif weight_kg <= 20:
         return 5.00
-    elif weight_kg > 20:   # <-- dead code: never evaluated
+    else:
         return 15.00
-
-    return 0.00  # unreachable, satisfies type checker
 
 
 def calculate_order_total(unit_price: float, quantity: int, weight_kg: float) -> dict:
