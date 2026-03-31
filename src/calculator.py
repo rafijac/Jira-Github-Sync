@@ -21,7 +21,7 @@ def calculate_shipping_cost(weight_kg: float) -> float:
         ValueError: If weight_kg is negative.
     """
     if weight_kg < 0:
-        raise ValueError(f"Weight must be non-negative, got {weight_kg}")
+        raise ValueError(f"Weight must be non-negative, got {weight_kg}"
 
     if weight_kg < 5:
         return 0.00
